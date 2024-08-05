@@ -13,14 +13,16 @@ let package = Package(
         ),
     ],
     dependencies: [
-        // Asegúrate de apuntar a tu propio fork de QKMRZParser
         .package(url: "https://github.com/pbzek/QKMRZParser.git", from: "2.0.0")
     ],
     targets: [
         .target(
             name: "QKMRZScanner",
             dependencies: ["QKMRZParser"],
-            path: "Sources/QKMRZScanner",
+            path: ".",
+            exclude: [
+                "Tests"
+            ],
             resources: [
                 .process("Resources/ocrb.traineddata")
             ]
@@ -28,7 +30,7 @@ let package = Package(
         .testTarget(
             name: "QKMRZScannerTests",
             dependencies: ["QKMRZScanner"],
-            path: "Tests/QKMRZScannerTests"
+            path: "Tests"
         ),
     ]
 )
