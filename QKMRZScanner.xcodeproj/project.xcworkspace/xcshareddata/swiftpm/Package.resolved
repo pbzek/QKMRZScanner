@@ -6,8 +6,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/pbzek/QKMRZParser",
       "state" : {
-        "branch" : "master",
-        "revision" : "571cf290364911b8d109a54ff189d50c10b56abd"
+        "revision" : "b9d9fe7b476ea5161657590e39197fbb08182cdd",
+        "version" : "3.0.0"
       }
     }
   ],

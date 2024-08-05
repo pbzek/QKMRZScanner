@@ -18,7 +18,7 @@
 		12C0055322D562CE0086FDBC /* CVImageBuffer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12C0055222D562CE0086FDBC /* CVImageBuffer.swift */; };
 		12C0055522D5643F0086FDBC /* CIContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12C0055422D5643F0086FDBC /* CIContext.swift */; };
 		12E298AD22D52A6700A9AFBB /* LuminanceThresholdFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12E298AC22D52A6700A9AFBB /* LuminanceThresholdFilter.swift */; };
-		1A2C1A8C2C6102C400EFA75B /* QKMRZParser in Frameworks */ = {isa = PBXBuildFile; productRef = 1A2C1A8B2C6102C400EFA75B /* QKMRZParser */; };
+		1A93D4612C618CD50060020C /* QKMRZParser in Frameworks */ = {isa = PBXBuildFile; productRef = 1A93D4602C618CD50060020C /* QKMRZParser */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -45,7 +45,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				121B535F216FBC72000F7123 /* CoreImage.framework in Frameworks */,
-				1A2C1A8C2C6102C400EFA75B /* QKMRZParser in Frameworks */,
+				1A93D4612C618CD50060020C /* QKMRZParser in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -150,7 +150,7 @@
 			);
 			name = QKMRZScanner;
 			packageProductDependencies = (
-				1A2C1A8B2C6102C400EFA75B /* QKMRZParser */,
+				1A93D4602C618CD50060020C /* QKMRZParser */,
 			);
 			productName = QKMRZScanner;
 			productReference = 1277813E21653FB500070E1C /* QKMRZScanner.framework */;
@@ -181,7 +181,7 @@
 			);
 			mainGroup = 1277813421653FB500070E1C;
 			packageReferences = (
-				1A2C1A8A2C6102C400EFA75B /* XCRemoteSwiftPackageReference "QKMRZParser" */,
+				1A93D45F2C618CD50060020C /* XCRemoteSwiftPackageReference "QKMRZParser" */,
 			);
 			productRefGroup = 1277813F21653FB500070E1C /* Products */;
 			projectDirPath = "";
@@ -427,20 +427,20 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		1A2C1A8A2C6102C400EFA75B /* XCRemoteSwiftPackageReference "QKMRZParser" */ = {
+		1A93D45F2C618CD50060020C /* XCRemoteSwiftPackageReference "QKMRZParser" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/pbzek/QKMRZParser";
 			requirement = {
-				branch = master;
-				kind = branch;
+				kind = upToNextMajorVersion;
+				minimumVersion = 3.0.0;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		1A2C1A8B2C6102C400EFA75B /* QKMRZParser */ = {
+		1A93D4602C618CD50060020C /* QKMRZParser */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 1A2C1A8A2C6102C400EFA75B /* XCRemoteSwiftPackageReference "QKMRZParser" */;
+			package = 1A93D45F2C618CD50060020C /* XCRemoteSwiftPackageReference "QKMRZParser" */;
 			productName = QKMRZParser;
 		};
 /* End XCSwiftPackageProductDependency section */
