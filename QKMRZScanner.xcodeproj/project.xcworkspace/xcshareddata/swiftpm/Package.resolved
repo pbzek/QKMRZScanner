@@ -1,13 +1,13 @@
 {
-  "originHash" : "f01c2c1dafa3fbd9954efe10890ab24207ea9b42ec498e65ea56275e4f8987e3",
+  "originHash" : "c6797935648891bf53c4908cf39e75c00c4be1aaf96c3a062c4a41a414d22961",
   "pins" : [
     {
       "identity" : "qkmrzparser",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/pbzek/QKMRZParser",
+      "location" : "https://github.com/Mattijah/QKMRZParser",
       "state" : {
-        "branch" : "master",
-        "revision" : "bc27284345589e30fa11378d7090a089f1c0a4a4"
+        "revision" : "ef79fdfa691e6323e729e33c2f79bace10286f49",
+        "version" : "2.0.0"
       }
     }
   ],

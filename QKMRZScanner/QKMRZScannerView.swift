@@ -324,13 +324,8 @@ extension QKMRZScannerView: AVCaptureVideoDataOutputSampleBufferDelegate {
             if let mrzTextImage = documentImage.cropping(to: mrzRegionRect) {
                 if let mrzResult = self.mrz(from: mrzTextImage) {
                     var allCheckDigitsValid: Bool
-
-                    switch mrzResult {
-                    case .genericDocument(let doc):
-                        allCheckDigitsValid = doc.allCheckDigitsValid
-                    case .frenchID(let doc):
-                        allCheckDigitsValid = doc.allCheckDigitsValid
-                    }
+                    
+                    allCheckDigitsValid = mrzResult.allCheckDigitsValid
 
                     if allCheckDigitsValid {
                         self.stopScanning()

@@ -40,35 +40,17 @@ public class QKMRZScanResult {
     
     public init(mrzResult: QKMRZResult, documentImage image: UIImage) {
         self.documentImage = image
-        
-        switch mrzResult {
-        case .genericDocument(let doc):
-            self.documentType = doc.documentType
-            self.countryCode = doc.countryCode
-            self.surnames = doc.surnames
-            self.givenNames = doc.givenNames
-            self.documentNumber = doc.documentNumber
-            self.nationalityCountryCode = doc.nationalityCountryCode
-            self.birthdate = doc.birthdate
-            self.sex = doc.sex
-            self.expiryDate = doc.expiryDate
-            self.personalNumber = doc.personalNumber
-            self.personalNumber2 = doc.personalNumber2
-            self.allCheckDigitsValid = doc.allCheckDigitsValid
-            
-        case .frenchID(let doc):
-            self.documentType = doc.documentType
-            self.countryCode = doc.countryCode
-            self.surnames = doc.lastName
-            self.givenNames = doc.firstName
-            self.documentNumber = doc.documentNumber
-            self.nationalityCountryCode = doc.countryCode
-            self.birthdate = doc.birthdate
-            self.sex = doc.sex
-            self.expiryDate = nil // French ID does not have expiry date in this struct
-            self.personalNumber = doc.issuanceDepartment ?? ""
-            self.personalNumber2 = doc.issuanceOffice
-            self.allCheckDigitsValid = doc.allCheckDigitsValid
-        }
+        self.documentType = mrzResult.documentType
+        self.countryCode = mrzResult.countryCode
+        self.surnames = mrzResult.surnames
+        self.givenNames = mrzResult.givenNames
+        self.documentNumber = mrzResult.documentNumber
+        self.nationalityCountryCode = mrzResult.nationalityCountryCode
+        self.birthdate = mrzResult.birthdate
+        self.sex = mrzResult.sex
+        self.expiryDate = mrzResult.expiryDate
+        self.personalNumber = mrzResult.personalNumber
+        self.personalNumber2 = mrzResult.personalNumber2
+        self.allCheckDigitsValid = mrzResult.allCheckDigitsValid
     }
 }

@@ -13,7 +13,7 @@ let package = Package(
         ),
     ],
     dependencies: [
-        .package(url: "https://github.com/pbzek/QKMRZParser.git", .branch("master"))
+        .package(url: "https://github.com/Mattijah/QKMRZParser.git", from: "2.0.0")
     ],
     targets: [
         .target(
