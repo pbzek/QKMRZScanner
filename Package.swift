@@ -13,7 +13,7 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/SwiftyTesseract/SwiftyTesseract.git", from: "1.2.5"),
-        .package(url: "https://github.com/Mattijah/QKMRZParser.git", from: "1.1.1")
+        .package(url: "https://github.com/Mattijah/QKMRZParser.git", .exact("1.1.1"))
     ],
     targets: [
         .target(
@@ -29,3 +29,4 @@ let package = Package(
             path: "Tests/QKMRZScannerTests"),
     ]
 )
+
