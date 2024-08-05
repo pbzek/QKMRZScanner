@@ -180,42 +180,54 @@ public class QKMRZScannerView: UIView {
     
     fileprivate func initCaptureSession() {
         captureSession.sessionPreset = .hd1920x1080
-        
-        guard let camera = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .back) else {
+
+        guard let camera = getCamera(position: .back) else {
             print("Camera not accessible")
             return
         }
-        
+
         guard let deviceInput = try? AVCaptureDeviceInput(device: camera) else {
             print("Capture input could not be initialized")
             return
         }
-        
+
         observer = captureSession.observe(\.isRunning, options: [.new]) { [unowned self] (model, change) in
-            // CaptureSession is started from the global queue (background). Change the `isScanning` on the main
-            // queue to avoid triggering the change handler also from the global queue as it may affect the UI.
             DispatchQueue.main.async { [weak self] in self?.isScanning = change.newValue! }
         }
-        
+
         if captureSession.canAddInput(deviceInput) && captureSession.canAddOutput(videoOutput) {
             captureSession.addInput(deviceInput)
             captureSession.addOutput(videoOutput)
-            
+
             videoOutput.setSampleBufferDelegate(self, queue: DispatchQueue(label: "video_frames_queue", qos: .userInteractive, attributes: [], autoreleaseFrequency: .workItem))
             videoOutput.alwaysDiscardsLateVideoFrames = true
             videoOutput.videoSettings = [kCVPixelBufferPixelFormatTypeKey: kCVPixelFormatType_32BGRA] as [String : Any]
-            videoOutput.connection(with: .video)!.videoOrientation = AVCaptureVideoOrientation(orientation: interfaceOrientation)
-            
+            videoOutput.connection(with: .video)?.videoOrientation = AVCaptureVideoOrientation(orientation: interfaceOrientation)
+
             videoPreviewLayer.session = captureSession
             videoPreviewLayer.videoGravity = .resizeAspectFill
-            
+
             layer.insertSublayer(videoPreviewLayer, at: 0)
-        }
-        else {
+        } else {
             print("Input & Output could not be added to the session")
         }
     }
-    
+
+    fileprivate func getCamera(position: AVCaptureDevice.Position) -> AVCaptureDevice? {
+        if #available(iOS 13.0, *) {
+            if let tripleCamera = AVCaptureDevice.default(.builtInTripleCamera, for: .video, position: position) {
+                return tripleCamera
+            } else if let dualCamera = AVCaptureDevice.default(.builtInDualCamera, for: .video, position: position) {
+                return dualCamera
+            } else {
+                return AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: position)
+            }
+        } else {
+            // Fallback on earlier versions
+            return AVCaptureDevice.default(for: .video)
+        }
+    }
+
     fileprivate func addAppObservers() {
         NotificationCenter.default.addObserver(self, selector: #selector(appDidEnterBackground), name: UIApplication.didEnterBackgroundNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(appWillEnterForeground), name: UIApplication.willEnterForegroundNotification, object: nil)
@@ -253,7 +265,13 @@ public class QKMRZScannerView: UIView {
 // MARK: - AVCaptureVideoDataOutputSampleBufferDelegate
 extension QKMRZScannerView: AVCaptureVideoDataOutputSampleBufferDelegate {
     public func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
-        guard let cgImage = CMSampleBufferGetImageBuffer(sampleBuffer)?.cgImage else {
+        guard let pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else {
+            return
+        }
+        
+        let ciImage = CIImage(cvPixelBuffer: pixelBuffer)
+        let context = CIContext(options: nil)
+        guard let cgImage = context.createCGImage(ciImage, from: ciImage.extent) else {
             return
         }
         
