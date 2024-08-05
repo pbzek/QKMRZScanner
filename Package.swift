@@ -4,7 +4,7 @@ import PackageDescription
 let package = Package(
     name: "QKMRZScanner",
     platforms: [
-        .iOS(.v11)
+        .iOS(.v12)  // Cambiado de .v11 a .v12
     ],
     products: [
         .library(
@@ -12,13 +12,12 @@ let package = Package(
             targets: ["QKMRZScanner"]),
     ],
     dependencies: [
-        .package(url: "https://github.com/SwiftyTesseract/SwiftyTesseract.git", from: "1.2.5"),
-        .package(url: "https://github.com/Mattijah/QKMRZParser.git", from: "1.1.1")
+        .package(url: "https://github.com/pbzek/QKMRZParser.git", from: "1.1.1")
     ],
     targets: [
         .target(
             name: "QKMRZScanner",
-            dependencies: ["SwiftyTesseract", "QKMRZParser"],
+            dependencies: ["QKMRZParser"],
             path: "Sources/QKMRZScanner",
             resources: [
                 .process("Resources/ocrb.traineddata")

@@ -5,9 +5,14 @@
 //  Created by Matej Dorcak on 03/10/2018.
 //
 
+//  QKMRZScannerView.swift
+//  QKMRZScanner
+//
+//  Created by Matej Dorcak on 03/10/2018.
+//
+
 import UIKit
 import AVFoundation
-import SwiftyTesseract
 import QKMRZParser
 import AudioToolbox
 import Vision
@@ -20,7 +25,6 @@ public protocol QKMRZScannerViewDelegate: AnyObject {
 // MARK: - QKMRZScannerView
 @IBDesignable
 public class QKMRZScannerView: UIView {
-    fileprivate let tesseract = SwiftyTesseract(language: .custom("ocrb"), dataSource: Bundle(for: QKMRZScannerView.self), engineMode: .tesseractOnly)
     fileprivate let mrzParser = QKMRZParser(ocrCorrection: true)
     fileprivate let captureSession = AVCaptureSession()
     fileprivate let videoOutput = AVCaptureVideoDataOutput()
@@ -89,12 +93,32 @@ public class QKMRZScannerView: UIView {
     // MARK: MRZ
     fileprivate func mrz(from cgImage: CGImage) -> QKMRZResult? {
         let mrzTextImage = UIImage(cgImage: preprocessImage(cgImage))
-        let recognizedString = try? tesseract.performOCR(on: mrzTextImage).get()
         
-        if let string = recognizedString, let mrzLines = mrzLines(from: string) {
-            return mrzParser.parse(mrzLines: mrzLines)
+        var recognizedText = ""
+        if #available(iOS 13.0, *) {
+            let request = VNRecognizeTextRequest { (request, error) in
+                guard error == nil else { return }
+                guard let observations = request.results as? [VNRecognizedTextObservation] else { return }
+                
+                for observation in observations {
+                    if let topCandidate = observation.topCandidates(1).first {
+                        recognizedText += topCandidate.string + "\n"
+                    }
+                }
+            }
+            
+            let requestHandler = VNImageRequestHandler(cgImage: mrzTextImage.cgImage!, options: [:])
+            do {
+                try requestHandler.perform([request])
+            } catch {
+                print("Error performing text recognition: \(error)")
+                return nil
+            }
+            
+            if let mrzLines = mrzLines(from: recognizedText) {
+                return mrzParser.parse(mrzLines: mrzLines)
+            }
         }
-        
         return nil
     }
     
@@ -278,12 +302,12 @@ extension QKMRZScannerView: AVCaptureVideoDataOutputSampleBufferDelegate {
         let documentImage = self.documentImage(from: cgImage)
         let imageRequestHandler = VNImageRequestHandler(cgImage: documentImage, options: [:])
         
-        let detectTextRectangles = VNDetectTextRectanglesRequest { [unowned self] request, error in
+        let detectTextRectangles = VNRecognizeTextRequest { [unowned self] request, error in
             guard error == nil else {
                 return
             }
             
-            guard let results = request.results as? [VNTextObservation] else {
+            guard let results = request.results as? [VNRecognizedTextObservation] else {
                 return
             }
             
@@ -298,20 +322,32 @@ extension QKMRZScannerView: AVCaptureVideoDataOutputSampleBufferDelegate {
             }
             
             if let mrzTextImage = documentImage.cropping(to: mrzRegionRect) {
-                if let mrzResult = self.mrz(from: mrzTextImage), mrzResult.allCheckDigitsValid {
-                    self.stopScanning()
-                    
-                    DispatchQueue.main.async {
-                        let enlargedDocumentImage = self.enlargedDocumentImage(from: cgImage)
-                        let scanResult = QKMRZScanResult(mrzResult: mrzResult, documentImage: enlargedDocumentImage)
-                        self.delegate?.mrzScannerView(self, didFind: scanResult)
+                if let mrzResult = self.mrz(from: mrzTextImage) {
+                    var allCheckDigitsValid: Bool
 
-                        if self.vibrateOnResult {
-                            self.notificationFeedback.notificationOccurred(.success)
+                    switch mrzResult {
+                    case .genericDocument(let doc):
+                        allCheckDigitsValid = doc.allCheckDigitsValid
+                    case .frenchID(let doc):
+                        allCheckDigitsValid = doc.allCheckDigitsValid
+                    }
+
+                    if allCheckDigitsValid {
+                        self.stopScanning()
+
+                        DispatchQueue.main.async {
+                            let enlargedDocumentImage = self.enlargedDocumentImage(from: cgImage)
+                            let scanResult = QKMRZScanResult(mrzResult: mrzResult, documentImage: enlargedDocumentImage)
+                            self.delegate?.mrzScannerView(self, didFind: scanResult)
+
+                            if self.vibrateOnResult {
+                                self.notificationFeedback.notificationOccurred(.success)
+                            }
                         }
                     }
                 }
             }
+
         }
         
         try? imageRequestHandler.perform([detectTextRectangles])
